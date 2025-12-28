@@ -2,5 +2,5 @@
 
 public class CommentErrorModel
 {
-    public string Error;
+    public required string Error;
 }

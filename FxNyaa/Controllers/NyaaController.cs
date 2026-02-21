@@ -152,8 +152,20 @@ public class NyaaController(
     [HttpGet("/view/{torrentId:int}")]
     public ActionResult<string> NyaaTorrentRequest(ulong torrentId)
     {
-        return View(nameof(NyaaTorrentRequest));
-    }
+        var nyaaInstanceUrl = fxNyaaConfig.Value.GetNyaaInstanceUrl(Request.Host.ToUriComponent());
+        var address = $"{nyaaInstanceUrl}/view/{torrentId}";
+        
+        if (!HttpContext.Request.Headers.UserAgent
+                .All(x => x != null && x.Contains("Discordbot")))
+        {
+            return Redirect(address);
+        }
+
+        return View(nameof(NyaaTorrentRequest), new TorrentEmbedModel()
+        {
+            Address = address
+        });
+}
 
     private static TorrentData GetTorrentData(IDocument document, ulong torrentId)
     {
